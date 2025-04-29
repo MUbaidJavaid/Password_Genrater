@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FSM Password Generator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .glass {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+        }
+        .toggle-checkbox:checked {
+            right: 0;
+            border-color: #4ade80;
+            right: 0;
+            border-color: #4ade80;
+        }
+        .toggle-checkbox:checked + .toggle-label {
+            background-color: #4ade80;
+            background-color: #4ade80;
+        }
+
+        @font-face {
+    font-family: 'UthmanicHafs_v2-1';
+    src: url('./font/UthmanicHafs_v2-1.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+    }
+
+    @font-face {
+          font-family: 'Poppins-ExtraLight';
+          src: url('./font/Poppins-ExtraLight.ttf') format('truetype');
+          font-weight: normal;
+          font-style: normal;
+    }
+
+    @font-face {
+      font-family: 'Poppins-SemiBold';
+      src: url('./font/Poppins-SemiBold.ttf') format('truetype');
+      font-weight: bold;
+      font-style: normal;
+    }
+
+    @font-face {
+      font-family: 'Poppins-Light';
+      src: url('./font/Poppins-Light.ttf') format('truetype');
+      font-weight: normal;
+      font-style: normal;
+    }
+
+    .body {
+      font-family: 'Poppins-SemiBold', sans-serif;
+    }
+    </style>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center p-4">
+    <div class="glass rounded-2xl shadow-2xl overflow-hidden w-full max-w-md">
+        <div class="p-8">
+            <div class="flex items-center justify-center mb-6">
+                <i class="fas fa-lock text-white text-3xl mr-3"></i>
+                <h1 class="text-3xl font-bold text-white">Password Generator</h1>
+            </div>
+            
+            <!-- Password Display -->
+            <div class="relative mb-6">
+                <input type="text" id="pass-box" readonly 
+                       class="w-full py-3 px-4 rounded-lg bg-white/20 text-white font-mono text-xl border border-white/30 focus:outline-none focus:ring-2 focus:ring-white/50">
+                <button id="copy-btn" class="absolute right-3 top-1/2 transform -translate-y-1/2 text-white hover:text-gray-200 transition">
+                    <i class="far fa-copy text-xl"></i>
+                </button>
+            </div>
+            
+            <!-- Length Slider -->
+            <div class="mb-6">
+                <div class="flex justify-between items-center mb-2">
+                    <label for="length" class="text-white font-medium">Length: <span id="length-value">12</span></label>
+                    <span class="text-white/80 text-sm">8-32 characters</span>
+                </div>
+                <input type="range" id="length" min="8" max="32" value="12" 
+                       class="w-full h-2 bg-white/30 rounded-lg appearance-none cursor-pointer">
+            </div>
+            
+            <!-- Character Options -->
+            <div class="space-y-3 mb-8">
+                <div class="flex items-center justify-between">
+                    <label for="uppercase" class="text-white font-medium">Uppercase (A-Z)</label>
+                    <div class="relative inline-block w-12 mr-2 align-middle select-none">
+                        <input type="checkbox" id="uppercase" checked class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer"/>
+                        <label for="uppercase" class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 cursor-pointer"></label>
+                    </div>
+                </div>
+                
+                <div class="flex items-center justify-between">
+                    <label for="lowercase" class="text-white font-medium">Lowercase (a-z)</label>
+                    <div class="relative inline-block w-12 mr-2 align-middle select-none">
+                        <input type="checkbox" id="lowercase" checked class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer"/>
+                        <label for="lowercase" class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 cursor-pointer"></label>
+                    </div>
+                </div>
+                
+                <div class="flex items-center justify-between">
+                    <label for="numbers" class="text-white font-medium">Numbers (0-9)</label>
+                    <div class="relative inline-block w-12 mr-2 align-middle select-none">
+                        <input type="checkbox" id="numbers" checked class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer"/>
+                        <label for="numbers" class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 cursor-pointer"></label>
+                    </div>
+                </div>
+                
+                <div class="flex items-center justify-between">
+                    <label for="symbols" class="text-white font-medium">Symbols (!@#$)</label>
+                    <div class="relative inline-block w-12 mr-2 align-middle select-none">
+                        <input type="checkbox" id="symbols" class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer"/>
+                        <label for="symbols" class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 cursor-pointer"></label>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Strength Meter -->
+            <div class="mb-6">
+                <div class="flex justify-between text-white mb-1">
+                    <span>Strength:</span>
+                    <span id="strength-text">Medium</span>
+                </div>
+                <div class="w-full bg-white/30 rounded-full h-2.5">
+                    <div id="strength-meter" class="h-2.5 rounded-full" style="width: 50%"></div>
+                </div>
+            </div>
+            
+            <!-- Generate Button -->
+            <button id="generate-btn" class="w-full py-3 px-6 bg-white text-blue-600 font-bold rounded-lg hover:scale-105 transition-transform duration-200 flex items-center justify-center">
+                <i class="fas fa-key mr-2"></i> Generate Password
+            </button>
+            
+            <!-- FSM Visualization -->
+            <div class="mt-8 pt-6 border-t border-white/20">
+                <h3 class="text-white font-medium mb-4 text-center">Password Validation FSM</h3>
+                <div class="flex justify-center">
+                    <svg width="300" height="120" viewBox="0 0 300 120" class="bg-white/10 rounded-lg p-2">
+                        <!-- States -->
+                        <circle id="fsm-q0" cx="50" cy="60" r="20" stroke="white" stroke-width="2" fill="#3b82f6" />
+                        <text x="50" y="65" text-anchor="middle" font-size="12" fill="white" class="font-bold">Q0</text>
+                        
+                        <circle id="fsm-q1" cx="150" cy="60" r="20" stroke="white" stroke-width="2" fill="none" />
+                        <text x="150" y="65" text-anchor="middle" font-size="12" fill="white">Q1</text>
+                        
+                        <circle id="fsm-q2" cx="250" cy="60" r="20" stroke="white" stroke-width="2" fill="none" />
+                        <text x="250" y="65" text-anchor="middle" font-size="12" fill="white">Q2</text>
+                        
+                        <!-- Transitions -->
+                        <path d="M70,60 Q100,30 130,60" stroke="white" stroke-width="1" fill="none" />
+                        <text x="100" y="25" text-anchor="middle" font-size="10" fill="white">Length ≥ 8</text>
+                        
+                        <path d="M170,60 Q200,30 230,60" stroke="white" stroke-width="1" fill="none" />
+                        <text x="200" y="25" text-anchor="middle" font-size="10" fill="white">Has A-Z</text>
+                        
+                        <path d="M250,80 Q280,100 250,120" stroke="white" stroke-width="1" fill="none" />
+                        <text x="280" y="100" text-anchor="middle" font-size="10" fill="white">Has a-z</text>
+                        
+                        <!-- Accept state -->
+                        <circle cx="250" cy="100" r="5" stroke="white" stroke-width="1" fill="white" />
+                    </svg>
+                </div>
+                <p class="text-white/80 text-sm mt-3 text-center">
+                    FSM Path: <span id="fsm-path" class="font-mono">Q0 → Q1 → Q2</span>
+                </p>
+            </div>
+        </div>
+    </div>
+    <script >
+
+                // DOM Elements
+        const passBox = document.getElementById('pass-box');
+        const copyBtn = document.getElementById('copy-btn');
+        const generateBtn = document.getElementById('generate-btn');
+        const lengthSlider = document.getElementById('length');
+        const lengthValue = document.getElementById('length-value');
+        const uppercaseToggle = document.getElementById('uppercase');
+        const lowercaseToggle = document.getElementById('lowercase');
+        const numbersToggle = document.getElementById('numbers');
+        const symbolsToggle = document.getElementById('symbols');
+        const strengthText = document.getElementById('strength-text');
+        const strengthMeter = document.getElementById('strength-meter');
+        const fsmPath = document.getElementById('fsm-path');
+
+        // Character sets
+        const charSets = {
+            uppercase: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ',
+            lowercase: 'abcdefghijklmnopqrstuvwxyz',
+            numbers: '0123456789',
+            symbols: '!@#$%^&*()_+-=[]{}|;:,.<>?'
+        };
+
+        // Update length display
+        lengthSlider.addEventListener('input', () => {
+            lengthValue.textContent = lengthSlider.value;
+        });
+
+        // Generate password function
+        function generatePassword() {
+            const length = parseInt(lengthSlider.value);
+            const options = {
+                uppercase: uppercaseToggle.checked,
+                lowercase: lowercaseToggle.checked,
+                numbers: numbersToggle.checked,
+                symbols: symbolsToggle.checked
+            };
+            
+            // Build character pool based on selected options
+            let charPool = '';
+            if (options.uppercase) charPool += charSets.uppercase;
+            if (options.lowercase) charPool += charSets.lowercase;
+            if (options.numbers) charPool += charSets.numbers;
+            if (options.symbols) charPool += charSets.symbols;
+            
+            // If no options selected, use all
+            if (charPool === '') {
+                charPool = Object.values(charSets).join('');
+            }
+            
+            let password = '';
+            let isValid = false;
+            let attempts = 0;
+            
+            // Generate until we get a valid password (FSM validation)
+            while (!isValid && attempts < 100) {
+                password = '';
+                for (let i = 0; i < length; i++) {
+                    password += charPool[Math.floor(Math.random() * charPool.length)];
+                }
+                isValid = validatePassword(password, options);
+                attempts++;
+            }
+            
+            // Update UI
+            passBox.value = password;
+            updateStrengthMeter(password);
+            updateFSMVisualization(password, options);
+            
+            return password;
+        }
+
+        // FSM Validation
+        function validatePassword(password, options) {
+            // State Q0: Minimum length
+            if (password.length < 8) return false;
+            
+            // State Q1: Uppercase required
+            if (options.uppercase && !/[A-Z]/.test(password)) return false;
+            
+            // State Q2: Lowercase required
+            if (options.lowercase && !/[a-z]/.test(password)) return false;
+            
+            // State Q3: Numbers or symbols required
+            if ((options.numbers || options.symbols) && !/[0-9!@#$%^&*]/.test(password)) return false;
+            
+            return true;
+        }
+
+        // Update password strength meter
+        function updateStrengthMeter(password) {
+            let strength = 0;
+            
+            // Length contributes up to 40 points
+            strength += Math.min(40, (password.length / 32) * 40);
+            
+            // Character variety contributes up to 60 points
+            let variety = 0;
+            if (/[A-Z]/.test(password)) variety++;
+            if (/[a-z]/.test(password)) variety++;
+            if (/[0-9]/.test(password)) variety++;
+            if (/[^A-Za-z0-9]/.test(password)) variety++;
+            strength += (variety / 4) * 60;
+            
+            // Update UI
+            strength = Math.round(strength);
+            strengthMeter.style.width = `${strength}%`;
+            
+            if (strength > 75) {
+                strengthText.textContent = 'Strong';
+                strengthMeter.className = 'h-2.5 rounded-full bg-green-500';
+            } else if (strength > 50) {
+                strengthText.textContent = 'Good';
+                strengthMeter.className = 'h-2.5 rounded-full bg-yellow-500';
+            } else {
+                strengthText.textContent = 'Weak';
+                strengthMeter.className = 'h-2.5 rounded-full bg-red-500';
+            }
+        }
+
+        // Update FSM visualization
+        function updateFSMVisualization(password, options) {
+            // Reset all states
+            document.querySelectorAll('#fsm-q0, #fsm-q1, #fsm-q2').forEach(el => {
+                el.setAttribute('fill', 'none');
+                el.setAttribute('stroke', 'white');
+            });
+            
+            // Highlight active states
+            document.getElementById('fsm-q0').setAttribute('fill', '#3b82f6');
+            
+            let path = ['Q0'];
+            
+            if (password.length >= 8) {
+                document.getElementById('fsm-q1').setAttribute('fill', '#3b82f6');
+                path.push('Q1');
+                
+                if (!options.uppercase || /[A-Z]/.test(password)) {
+                    document.getElementById('fsm-q2').setAttribute('fill', '#3b82f6');
+                    path.push('Q2');
+                }
+            }
+            
+            fsmPath.textContent = path.join(' → ');
+        }
+
+        // Copy to clipboard
+        copyBtn.addEventListener('click', () => {
+            passBox.select();
+            document.execCommand('copy');
+            
+            // Visual feedback
+            const originalIcon = copyBtn.innerHTML;
+            copyBtn.innerHTML = '<i class="fas fa-check"></i>';
+            setTimeout(() => {
+                copyBtn.innerHTML = originalIcon;
+            }, 2000);
+        });
+
+        // Generate on button click
+        generateBtn.addEventListener('click', generatePassword);
+
+        // Generate on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            generatePassword();
+            updateFSMVisualization(passBox.value, {
+                uppercase: uppercaseToggle.checked,
+                lowercase: lowercaseToggle.checked,
+                numbers: numbersToggle.checked,
+                symbols: symbolsToggle.checked
+            });
+        });
+    </script>
+</body>
+</html>
